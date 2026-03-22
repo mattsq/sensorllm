@@ -15,14 +15,19 @@ Output layout (relative to ``data_root``)::
 
 Each HDF5 file has the structure::
 
-    /sensor_type      str scalar
-    /event_type       str scalar
-    /signal           float32 (n_samples, n_channels)
-    /sample_rate      float64 scalar
-    /metadata/        group
-        flight_id     str scalar
-        label         str scalar
+    /signal               float32 (n_samples, n_channels) dataset
+    /metadata/            group
 
+File-level HDF5 attributes::
+
+    sensor_type           str scalar attribute
+    event_type            str scalar attribute
+    sample_rate           float64 scalar attribute
+
+Attributes on the ``/metadata`` group::
+
+    flight_id             str scalar attribute
+    label                 str scalar attribute
 Each JSONL line has the schema expected by the dataset classes::
 
     {
