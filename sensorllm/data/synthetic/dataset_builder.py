@@ -37,7 +37,11 @@ Each JSONL line has the schema expected by the dataset classes::
         "split": "train",
         "label": "normal",
         "description": "<pretrain description>",
-        "qa_pairs": [{"question": "...", "answer": "..."}]
+        "qa_pairs": [{"question": "...", "answer": "..."}],
+        "sample_rate": 256.0,
+        "n_channels": 4,
+        "n_samples": 4096,
+        "flight_id": "FLIGHT_0001"
     }
 """
 
