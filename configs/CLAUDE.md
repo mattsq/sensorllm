@@ -37,16 +37,16 @@ data:
   sensors           list[str] Sensor modalities: ["imu", "vibration", "pressure", ...]
   transform         str       Transform key from TRANSFORM_REGISTRY
   window_size       int       Samples per window
-  hop_size          int       Hop between windows
-  image_size        int       Target H=W for resize after transform
+  hop_size          int       Hop between windows (overlap = window_size - hop_size)
+  n_channels        int       Number of sensor input channels (C dimension)
   batch_size        int
   num_workers       int
 
 model:
   encoder:
-    name            str       Key from ENCODER_REGISTRY ("vit_b16", "resnet50", "cnn1d")
-    pretrained      str|null  HuggingFace model ID or local path
-    freeze          bool      Whether to freeze during all training
+    name            str       Key from ENCODER_REGISTRY ("cnn1d", "transformer", "patchtst")
+    in_channels     int       Must match data.n_channels
+    freeze          bool      Whether to freeze encoder during Stage 2
   adapter:
     name            str       Key from ADAPTER_REGISTRY
     n_output_tokens int       Fixed output token count
@@ -86,10 +86,10 @@ evaluation:
 Format: `expNNN_<adapter>_<encoder>[_<variant>].yaml`
 
 ```
-exp001_linear_proj_vit.yaml     # Stage 1 baseline
-exp002_qformer_vit.yaml         # Stage 1 Q-Former
-exp003_perceiver_resnet.yaml    # Stage 1 Perceiver + ResNet
-exp004_qformer_vit_stage2.yaml  # Stage 2 follow-on from exp002
+exp001_cnn1d_linear.yaml        # Stage 1 baseline: CNN1D + Linear Projection
+exp002_transformer_qformer.yaml # Stage 1: Transformer encoder + Q-Former
+exp003_patchtst_perceiver.yaml  # Stage 1: PatchTST + Perceiver Resampler
+exp004_transformer_qformer_stage2.yaml  # Stage 2 follow-on from exp002
 ```
 
 - **Increment NNN sequentially** — never reuse a number

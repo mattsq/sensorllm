@@ -1,0 +1,54 @@
+# Experiment 003: PatchTST Encoder + Perceiver Resampler Adapter
+#
+# PatchTST-style channel-independent patching (patch_len=64, stride=32 = 50% overlap)
+# produces ~64 patches per channel. Perceiver Resampler compresses to 64 LLM tokens
+# via iterative latent cross-attention.
+#
+# Tests the strongest combination: PatchTST's proven time-series representation
+# learning with Perceiver's expressive latent compression.
+
+_base_:
+  - configs/base/data_base.yaml
+  - configs/base/model_base.yaml
+  - configs/base/training_base.yaml
+  - configs/adapters/perceiver.yaml
+
+experiment_name: exp003_patchtst_perceiver
+
+seed: 42
+
+data:
+  sensors:
+    - vibration
+  window_size: 4096
+  hop_size: 2048
+  n_channels: 1
+  batch_size: 16              # Perceiver uses more memory; halve batch size
+
+model:
+  encoder:
+    name: patchtst
+    in_channels: 1
+    patch_len: 64             # N_patches = floor((4096-64)/32)+1 = 126
+    stride: 32                # 50% overlap
+    d_model: 256
+    n_heads: 4
+    n_layers: 4
+    dropout: 0.1
+    freeze: false
+  llm:
+    name: meta-llama/Llama-3.2-1B-Instruct
+    freeze: true
+    lora:
+      enabled: false
+
+training:
+  stage: 1
+  max_steps: 10000
+  learning_rate: 5.0e-5
+  warmup_steps: 500
+  gradient_accumulation_steps: 8    # compensate for smaller batch
+  bf16: true
+  save_steps: 1000
+  eval_steps: 500
+  logging_steps: 50

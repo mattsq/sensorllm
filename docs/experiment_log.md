@@ -5,48 +5,52 @@ Record the motivation, key differences from the prior experiment, and results wh
 
 ---
 
-## exp001 — Linear Projection + ViT-B/16 (Stage 1 Baseline)
+## exp001 — CNN1D Encoder + Linear Projection Adapter (Stage 1 Baseline)
 
-**Config**: `configs/experiments/exp001_linear_proj_vit.yaml`
+**Config**: `configs/experiments/exp001_cnn1d_linear.yaml`
 **Date**: —
 **Status**: Not yet run
 
-**Motivation**: Establish baseline performance with the simplest possible adapter
-(two-layer MLP + adaptive average pool) and a standard ViT-B/16 encoder pretrained
-on ImageNet. Mel spectrogram transform. Stage 1 alignment only.
+**Motivation**: Establish baseline performance with the simplest end-to-end pipeline.
+Dilated 1D residual CNN encodes raw vibration sensor windows directly into temporal
+patch embeddings (16 patches from a 4096-sample window). Linear projection (avg pool
++ MLP) maps to 32 LLM tokens. No image transform at any stage.
 
-**Key settings**: 10k steps, lr=1e-4, batch=32, 32 output tokens
+**Key settings**: 10k steps, lr=1e-4, batch=32, 32 output tokens, 16 encoder patches
 
 **Results**: TBD
 
 ---
 
-## exp002 — Q-Former + ViT-B/16 (Stage 1)
+## exp002 — Transformer Encoder + Q-Former Adapter (Stage 1)
 
-**Config**: `configs/experiments/exp002_qformer_vit.yaml`
+**Config**: `configs/experiments/exp002_transformer_qformer.yaml`
 **Date**: —
 **Status**: Not yet run
 
-**Motivation**: Test whether learnable cross-attention queries (Q-Former) improve over
-the linear projection baseline. Same encoder and data config for fair comparison.
+**Motivation**: Test whether a Transformer-based temporal encoder (patch size=64,
+producing 64 patches) paired with Q-Former's selective cross-attention queries
+improves over the CNN1D + linear projection baseline.
 
-**Key differences from exp001**: Adapter = Q-Former (6-layer, 8-head, 32 queries)
+**Key differences from exp001**: Encoder = Transformer (64 patches), Adapter = Q-Former
+(6-layer, 8-head, 32 learnable queries)
 
 **Results**: TBD
 
 ---
 
-## exp003 — Perceiver Resampler + ResNet-50 (Stage 1)
+## exp003 — PatchTST Encoder + Perceiver Resampler Adapter (Stage 1)
 
-**Config**: `configs/experiments/exp003_perceiver_resnet.yaml`
+**Config**: `configs/experiments/exp003_patchtst_perceiver.yaml`
 **Date**: —
 **Status**: Not yet run
 
-**Motivation**: Test Perceiver Resampler with a CNN spatial encoder (ResNet-50).
-ResNet features may capture different sensor image structure than ViT patch tokens.
+**Motivation**: Test the strongest combination: PatchTST's channel-independent
+overlapping patching (patch_len=64, stride=32 → ~126 patches) paired with Perceiver
+Resampler's expressive latent compression to 64 LLM tokens.
 
-**Key differences from exp002**: Adapter = Perceiver (4-layer, 64 latents),
-Encoder = ResNet-50 (layer4 features)
+**Key differences from exp002**: Encoder = PatchTST (overlapping patches, ~126 patches),
+Adapter = Perceiver Resampler (4-layer, 64 latents)
 
 **Results**: TBD
 

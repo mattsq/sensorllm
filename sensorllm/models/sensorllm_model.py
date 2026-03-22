@@ -14,24 +14,26 @@ class SensorLLMModel(nn.Module):
     """End-to-end SensorLLM model.
 
     Composes three components:
-        1. SensorEncoder: sensor image → patch embeddings
+        1. SensorEncoder: raw sensor signal → temporal patch embeddings
         2. SensorAdapter: patch embeddings → LLM token embeddings (fixed length)
         3. LLMBackbone: token embeddings → text (causal LM)
+
+    Sensor data is encoded **directly** from raw time-series — no image conversion.
 
     Sensor token embeddings are prepended to the text token embeddings before
     the LLM forward pass. A special <sensor> placeholder token in the prompt
     marks the injection point.
 
     Args:
-        encoder: Instantiated SensorEncoder.
-        adapter: Instantiated SensorAdapter.
+        encoder: Instantiated SensorEncoder (CNN1D, Transformer, PatchTST, etc.).
+        adapter: Instantiated SensorAdapter (Linear, Q-Former, Perceiver, etc.).
         llm: Instantiated LLMBackbone.
-        sensor_token_id: Token ID of the <sensor> placeholder in the tokenizer vocabulary.
+        sensor_token_id: Token ID of the <sensor> placeholder in the tokenizer vocab.
 
     Example:
         model = SensorLLMModel(encoder, adapter, llm, sensor_token_id=32000)
-        loss = model(sensor_images, input_ids, attention_mask, labels)
-        generated = model.generate(sensor_images, prompt_ids, prompt_mask)
+        loss = model(sensor_signals, input_ids, attention_mask, labels)
+        generated = model.generate(sensor_signals, prompt_ids, prompt_mask)
     """
 
     def __init__(
@@ -49,15 +51,16 @@ class SensorLLMModel(nn.Module):
 
     def forward(
         self,
-        sensor_images: torch.Tensor,
+        sensor_signals: torch.Tensor,
         input_ids: torch.Tensor,
         attention_mask: torch.Tensor,
         labels: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor | None]:
-        """Full forward pass: sensor image + text tokens → loss/logits.
+        """Full forward pass: sensor signal + text tokens → loss/logits.
 
         Args:
-            sensor_images: Batch of sensor images (B, C, H, W).
+            sensor_signals: Batch of windowed sensor signals (B, C, L).
+                C = n_sensor_channels, L = window_size.
             input_ids: Tokenized text prompt + answer (B, seq_len).
             attention_mask: Text attention mask (B, seq_len).
             labels: Target token IDs for loss (B, seq_len); -100 = masked.
@@ -69,15 +72,15 @@ class SensorLLMModel(nn.Module):
 
     def generate(
         self,
-        sensor_images: torch.Tensor,
+        sensor_signals: torch.Tensor,
         prompt_ids: torch.Tensor,
         prompt_mask: torch.Tensor,
         **generation_kwargs,
     ) -> torch.Tensor:
-        """Generate text conditioned on sensor images and a text prompt.
+        """Generate text conditioned on sensor signals and a text prompt.
 
         Args:
-            sensor_images: (B, C, H, W) sensor image batch.
+            sensor_signals: (B, C, L) sensor signal batch.
             prompt_ids: Tokenized prompt (B, prompt_len).
             prompt_mask: Prompt attention mask (B, prompt_len).
             **generation_kwargs: Forwarded to LLM generate() (max_new_tokens, etc.).
@@ -87,15 +90,15 @@ class SensorLLMModel(nn.Module):
         """
         raise NotImplementedError("SensorLLMModel.generate() not yet implemented")
 
-    def _encode_sensor(self, sensor_images: torch.Tensor) -> torch.Tensor:
-        """Encode sensor images to LLM-space token embeddings.
+    def _encode_sensor(self, sensor_signals: torch.Tensor) -> torch.Tensor:
+        """Encode raw sensor signals to LLM-space token embeddings.
 
         Args:
-            sensor_images: (B, C, H, W)
+            sensor_signals: (B, C, L) — batch of windowed sensor signals.
 
         Returns:
-            Token embeddings (B, n_output_tokens, llm_hidden_size)
+            Token embeddings (B, n_output_tokens, llm_hidden_size).
         """
-        patch_embs = self.encoder(sensor_images)   # (B, N, encoder_dim)
-        token_embs = self.adapter(patch_embs)       # (B, n_tokens, llm_dim)
+        patch_embs = self.encoder(sensor_signals)   # (B, N, encoder_dim)
+        token_embs = self.adapter(patch_embs)        # (B, n_tokens, llm_dim)
         return token_embs

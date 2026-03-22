@@ -17,7 +17,6 @@ import torch
 def synthetic_vibration_signal() -> np.ndarray:
     """1D synthetic vibration signal (1 second at 4096 Hz)."""
     t = np.linspace(0, 1.0, 4096, dtype=np.float32)
-    # Sum of two sinusoids + noise
     return (
         np.sin(2 * np.pi * 50 * t)
         + 0.5 * np.sin(2 * np.pi * 120 * t)
@@ -33,15 +32,21 @@ def synthetic_multichannel_signal() -> np.ndarray:
 
 
 @pytest.fixture
-def synthetic_sensor_image() -> torch.Tensor:
-    """Single synthetic sensor image tensor (1, 3, 224, 224)."""
-    return torch.randn(1, 3, 224, 224)
+def synthetic_sensor_signal() -> torch.Tensor:
+    """Single synthetic sensor signal tensor (1, 1, 4096) — (B, C, L)."""
+    return torch.randn(1, 1, 4096)
 
 
 @pytest.fixture
 def synthetic_sensor_batch() -> torch.Tensor:
-    """Batch of 4 synthetic sensor images (4, 3, 224, 224)."""
-    return torch.randn(4, 3, 224, 224)
+    """Batch of 4 synthetic sensor signals (4, 1, 4096) — (B, C, L)."""
+    return torch.randn(4, 1, 4096)
+
+
+@pytest.fixture
+def synthetic_multichannel_batch() -> torch.Tensor:
+    """Batch of 4 three-channel sensor signals (4, 3, 4096) — (B, C, L)."""
+    return torch.randn(4, 3, 4096)
 
 
 # ─── Synthetic token sequences ─────────────────────────────────────────────────
@@ -57,11 +62,11 @@ def synthetic_token_batch() -> dict[str, torch.Tensor]:
     }
 
 
-# ─── Minimal adapter config ────────────────────────────────────────────────────
+# ─── Minimal adapter configs ───────────────────────────────────────────────────
 
 @pytest.fixture
 def linear_adapter_config() -> dict:
-    return {"input_dim": 768, "output_dim": 512, "n_tokens": 8}
+    return {"input_dim": 64, "output_dim": 128, "n_tokens": 8}
 
 
 @pytest.fixture

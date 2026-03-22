@@ -2,28 +2,23 @@
 
 ## Overview
 
-SensorLLM is a multimodal model that bridges aircraft sensor time-series data with
-large language models using image adapter approaches.
+SensorLLM is a multimodal model that bridges aircraft sensor time-series data directly
+with large language models. Sensor data is encoded in the **temporal domain** — no
+image conversion step is used.
 
 ```
 Aircraft Sensor Data (time-series)
-         │
+         │  raw windowed signal (B, C, L)
          ▼
 ┌────────────────────┐
-│  Signal → Image    │  spectrogram / wavelet scalogram / recurrence plot
-│  Transform         │
-└────────────────────┘
-         │  image (H × W)
-         ▼
-┌────────────────────┐
-│  Sensor Encoder    │  ViT-B/16, ResNet-50, CNN1D
-│                    │  → patch/spatial embeddings (N × D_enc)
+│  Time-Series       │  CNN1D, Transformer, PatchTST
+│  Encoder           │  → temporal patch embeddings (B, N, D_enc)
 └────────────────────┘
          │  (B, N, D_enc)
          ▼
 ┌────────────────────┐
 │  Sensor Adapter    │  Linear Projection | Q-Former | Perceiver | MLP-Mixer
-│                    │  → fixed-length token embeddings (T × D_llm)
+│                    │  → fixed-length token embeddings (B, T, D_llm)
 └────────────────────┘
          │  (B, T, D_llm)   T = n_output_tokens (constant)
          ▼
@@ -34,8 +29,8 @@ Aircraft Sensor Data (time-series)
          │  concat: [sensor tokens | prompt tokens]  (B, T+S, D_llm)
          ▼
 ┌────────────────────┐
-│  LLM Backbone      │  LLaMA-3, Mistral, etc.
-│  (Causal LM)       │  → logits over vocabulary
+│  LLM Backbone      │  LLaMA-3, Mistral, etc. (causal LM)
+│                    │  → logits over vocabulary
 └────────────────────┘
          │
          ▼
@@ -44,30 +39,42 @@ Aircraft Sensor Data (time-series)
 
 ## Key Design Decisions
 
+### Direct Time-Series Encoding
+
+Sensor data is **never converted to images**. Time-series encoders (CNN1D, Transformer,
+PatchTST) process raw windowed signals `(B, C, L)` directly into latent embeddings
+`(B, N, D)`. This preserves temporal resolution, avoids information loss from image
+transforms, and removes a hyperparameter-heavy preprocessing step.
+
 ### Fixed-Length Adapter Output
 
 All adapters output exactly `n_output_tokens` token embeddings regardless of input
-sensor sequence length. This is the key contract that makes adapters drop-in swappable.
+patch count N. This makes adapters drop-in swappable without touching the LLM input
+construction logic.
 
 ### Two-Stage Training
 
-Training follows the LLaVA / BLIP-2 two-stage protocol:
+1. **Stage 1 — Alignment**: encoder + adapter train together with LLM frozen.
+   Task: generate natural language descriptions from sensor windows.
+   Teaches the encoder/adapter to produce LLM-compatible representations.
 
-1. **Stage 1 — Adapter Alignment**: Only the adapter is trained. Encoder and LLM are
-   frozen. The task is predicting sensor descriptions. This aligns the sensor feature
-   space with the LLM's expected token distribution.
-
-2. **Stage 2 — Instruction Fine-tuning**: Encoder stays frozen. The adapter and LLM
-   (via LoRA) are trained together on instruction-following tasks (Q&A, anomaly
-   description, fault diagnosis).
+2. **Stage 2 — Instruction Fine-tuning**: encoder frozen, adapter + LLM (LoRA) trained.
+   Task: sensor Q&A, anomaly description, fault diagnosis.
 
 ### Sensor Token Injection
 
-The LLM tokenizer is extended with a special `<sensor>` placeholder token. During
-forward pass, wherever `<sensor>` appears in the input_ids, it is replaced with the
-`n_output_tokens` sensor token embeddings from the adapter. This allows flexible
-positioning of sensor tokens within multi-turn prompts.
+The LLM tokenizer is extended with a `<sensor>` placeholder token. During forward pass,
+sensor tokens from the adapter replace the `<sensor>` position in the input embedding
+sequence, allowing flexible multi-turn prompt construction.
 
 ## Component Interfaces
 
 See `sensorllm/models/CLAUDE.md` for detailed interface contracts.
+
+## Encoder Comparison
+
+| Encoder | Mechanism | Temporal Coverage | Speed |
+|---------|-----------|------------------|-------|
+| CNN1D | Dilated 1D residual convolutions | Local + multi-scale | Fast |
+| Transformer | Self-attention over non-overlapping patches | Global | Medium |
+| PatchTST | Channel-independent overlapping patches + Transformer | Global + overlap | Medium |

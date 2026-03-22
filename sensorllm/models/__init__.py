@@ -1,4 +1,4 @@
-"""Model architectures: encoders, adapters, LLM wrappers, and top-level SensorLLM model."""
+"""Model architectures: time-series encoders, adapters, LLM wrappers, and SensorLLM model."""
 
 from sensorllm.models.encoders import ENCODER_REGISTRY
 from sensorllm.models.adapters import ADAPTER_REGISTRY

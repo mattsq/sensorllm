@@ -10,23 +10,36 @@ from sensorllm.data.datasets.base import BaseSensorDataset
 class SensorPretrainDataset(BaseSensorDataset):
     """Dataset for sensor-LLM adapter alignment pretraining.
 
-    Each sample pairs a sensor image with a short natural language description
-    of the signal characteristics. Used in Stage 1 (adapter alignment) to
-    teach the adapter to map sensor features into LLM token space.
+    Each sample pairs a windowed sensor time-series with a short natural language
+    description of the signal characteristics. Used in Stage 1 (adapter alignment)
+    to teach the adapter and encoder to map sensor features into LLM token space.
+
+    The raw sensor window is returned as-is (float32, shape (C, L)).
 
     Args:
         data_root: Path to the data directory.
         split: One of 'train', 'val'.
-        transform: Instantiated signal-to-image transform.
         tokenizer: HuggingFace tokenizer.
+        window_size: Number of samples per window.
+        n_channels: Number of sensor channels.
         max_length: Maximum token sequence length.
     """
 
-    def __init__(self, data_root, split: str, transform, tokenizer, max_length: int = 256, **config) -> None:
+    def __init__(
+        self,
+        data_root,
+        split: str,
+        tokenizer,
+        window_size: int = 4096,
+        n_channels: int = 1,
+        max_length: int = 256,
+        **config,
+    ) -> None:
         self.data_root = data_root
         self.split = split
-        self.transform = transform
         self.tokenizer = tokenizer
+        self.window_size = window_size
+        self.n_channels = n_channels
         self.max_length = max_length
         self._samples: list = []
 

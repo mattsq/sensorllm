@@ -15,7 +15,7 @@ from sensorllm.models.adapters.perceiver import PerceiverResamplerAdapter
 class TestLinearProjectionAdapter:
     def test_output_shape(self):
         adapter = LinearProjectionAdapter(input_dim=64, output_dim=128, n_tokens=8)
-        x = torch.randn(2, 16, 64)  # (B, N_patches, input_dim)
+        x = torch.randn(2, 16, 64)  # (B, N_patches, encoder_dim) — from time-series encoder
         out = adapter(x)
         assert out.shape == (2, 8, 128)
 
@@ -31,7 +31,7 @@ class TestLinearProjectionAdapter:
 
     def test_fixed_output_regardless_of_input_length(self):
         adapter = LinearProjectionAdapter(input_dim=64, output_dim=128, n_tokens=8)
-        for n_patches in [4, 16, 64, 196]:
+        for n_patches in [4, 16, 64, 126]:  # various patch counts from different encoders
             x = torch.randn(1, n_patches, 64)
             out = adapter(x)
             assert out.shape == (1, 8, 128), f"Failed for n_patches={n_patches}"
@@ -57,7 +57,7 @@ class TestQFormerAdapter:
                                   qformer_hidden_dim=64, n_heads=2, n_layers=1)
         x = torch.randn(2, 10, 64)
         mask = torch.ones(2, 10, dtype=torch.long)
-        mask[0, 8:] = 0  # mask last 2 tokens in first sample
+        mask[0, 8:] = 0
         out = adapter(x, attention_mask=mask)
         assert out.shape == (2, 4, 128)
 
@@ -68,7 +68,7 @@ class TestPerceiverResamplerAdapter:
             input_dim=64, output_dim=128, n_latents=4,
             latent_dim=32, n_heads=2, n_layers=1
         )
-        x = torch.randn(2, 20, 64)
+        x = torch.randn(2, 20, 64)  # longer N from PatchTST encoder
         out = adapter(x)
         assert out.shape == (2, 4, 128)
 
@@ -76,6 +76,16 @@ class TestPerceiverResamplerAdapter:
         adapter = PerceiverResamplerAdapter(input_dim=64, output_dim=128, n_latents=8,
                                              latent_dim=32, n_heads=2, n_layers=1)
         assert adapter.n_output_tokens == 8
+
+    def test_handles_long_input_sequence(self):
+        """Perceiver should handle the ~126 patches from PatchTST on a 4096-sample window."""
+        adapter = PerceiverResamplerAdapter(
+            input_dim=64, output_dim=128, n_latents=32,
+            latent_dim=32, n_heads=2, n_layers=1
+        )
+        x = torch.randn(2, 126, 64)  # PatchTST output length
+        out = adapter(x)
+        assert out.shape == (2, 32, 128)
 
 
 class TestAdapterRegistry:
