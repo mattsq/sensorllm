@@ -268,4 +268,4 @@ class SyntheticDatasetBuilder:
             with out_path.open("w") as fh:
                 for rec in recs:
                     fh.write(json.dumps(rec) + "\n")
-            logger.info("Wrote %d records → %s", len(recs), out_path)
+            logger.info("Wrote %d records -> %s", len(recs), out_path)

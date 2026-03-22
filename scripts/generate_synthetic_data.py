@@ -45,7 +45,7 @@ from sensorllm.data.synthetic.sensor_generator import SensorType, SyntheticSenso
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
     datefmt="%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
@@ -154,9 +154,9 @@ def print_summary(records: list[dict]) -> None:
         event_counts[f"{r['sensor']}/{r['event_type']}"] += 1
 
     total = len(records)
-    print(f"\n{'─' * 60}")
+    print(f"\n{'-' * 60}")
     print(f"  Synthetic Dataset Summary  ({total} total samples)")
-    print(f"{'─' * 60}")
+    print(f"{'-' * 60}")
     print(f"  {'Split':<10} {'Count':>6}  {'%':>6}")
     for split in ("train", "val", "test"):
         n = split_counts[split]
@@ -169,7 +169,7 @@ def print_summary(records: list[dict]) -> None:
     print(f"  {'Sensor/Event':<32} {'Count':>6}")
     for key, n in sorted(event_counts.items()):
         print(f"  {key:<32} {n:>6}")
-    print(f"{'─' * 60}\n")
+    print(f"{'-' * 60}\n")
 
 
 def main() -> int:
