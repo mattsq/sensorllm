@@ -23,7 +23,7 @@ class TestLoadConfig:
         from sensorllm.utils.config import load_config
 
         base_file = tmp_path / "base.yaml"
-        base_file.write_text("training:\n  lr: 1e-4\n  steps: 1000\n")
+        base_file.write_text("training:\n  lr: 1.0e-4\n  steps: 1000\n")
 
         exp_file = tmp_path / "exp.yaml"
         exp_file.write_text(
