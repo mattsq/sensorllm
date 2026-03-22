@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "sensorllm"
+version = "0.1.0"
+description = "Image adapter approaches for fusing aircraft sensor data with LLMs"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "SensorLLM Contributors" }]
+
+dependencies = [
+    # Core ML
+    "torch>=2.1.0",
+    "torchvision>=0.16.0",
+    "transformers>=4.40.0",
+    "datasets>=2.18.0",
+    "peft>=0.10.0",          # LoRA / PEFT adapters
+    "accelerate>=0.28.0",
+    # Signal processing
+    "scipy>=1.12.0",
+    "librosa>=0.10.0",        # Mel spectrograms, audio/signal features
+    "numpy>=1.26.0",
+    # Config & I/O
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    "h5py>=3.10.0",           # HDF5 sensor file reading
+    # Experiment tracking
+    "wandb>=0.16.0",
+    # Utilities
+    "tqdm>=4.66.0",
+    "einops>=0.7.0",          # Tensor rearrangement for adapters
+    "pillow>=10.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "black>=24.0",
+    "ruff>=0.4.0",
+    "mypy>=1.9.0",
+    "types-PyYAML",
+    "ipykernel>=6.29.0",
+    "jupyterlab>=4.0.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+]
+
+[project.scripts]
+sensorllm-train = "scripts.train:main"
+sensorllm-eval = "scripts.evaluate:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sensorllm*"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]  # line length handled by black
+
+[tool.mypy]
+python_version = "3.10"
+strict = false
+ignore_missing_imports = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "gpu: marks tests requiring a GPU",
+]

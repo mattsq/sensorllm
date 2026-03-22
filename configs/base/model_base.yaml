@@ -1,0 +1,31 @@
+# Base model configuration.
+# Adapter-specific fields are overridden by configs/adapters/*.yaml.
+
+model:
+  encoder:
+    name: vit_b16
+    pretrained: google/vit-base-patch16-224
+    freeze: true
+    output_hidden_layer: -1
+  adapter:
+    name: linear_projection     # overridden by adapter configs
+    n_output_tokens: 32
+    hidden_dim: 768
+    n_layers: 2
+    n_heads: 8
+  llm:
+    name: meta-llama/Llama-3.2-1B-Instruct
+    torch_dtype: bfloat16
+    device_map: auto
+    freeze: true
+    lora:
+      enabled: false
+      r: 16
+      alpha: 32.0
+      dropout: 0.05
+      target_modules:
+        - q_proj
+        - v_proj
+        - k_proj
+        - o_proj
+  sensor_token_id: 32000       # <sensor> token ID in tokenizer vocabulary

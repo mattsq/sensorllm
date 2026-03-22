@@ -1,0 +1,26 @@
+# Base training configuration.
+
+seed: 42
+
+training:
+  stage: 1                         # 1=alignment, 2=instruction fine-tuning
+  max_steps: 10000
+  learning_rate: 1.0e-4
+  warmup_steps: 500
+  weight_decay: 0.01
+  gradient_accumulation_steps: 4
+  max_grad_norm: 1.0
+  bf16: true
+  fp16: false
+  save_steps: 1000
+  eval_steps: 500
+  logging_steps: 50
+  dataloader_num_workers: 4
+  output_dir: $SENSORLLM_OUTPUT_ROOT
+
+evaluation:
+  metrics:
+    - bleu
+    - rouge
+  generation_max_new_tokens: 128
+  batch_size: 8

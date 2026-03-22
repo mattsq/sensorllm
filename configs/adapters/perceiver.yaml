@@ -1,0 +1,14 @@
+# Perceiver Resampler adapter hyperparameters (Flamingo style).
+# Fixed latent array that cross-attends to sensor embeddings.
+
+model:
+  adapter:
+    name: perceiver
+    n_output_tokens: 64        # number of latent tokens (more than Q-Former for richer rep.)
+    hidden_dim: 512            # latent dimension
+    n_layers: 4                # number of Perceiver layers
+    n_heads: 8                 # attention heads
+    ff_mult: 4                 # feed-forward expansion multiplier
+
+training:
+  learning_rate: 5.0e-5

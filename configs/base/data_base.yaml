@@ -1,0 +1,15 @@
+# Base data pipeline configuration.
+# All experiment configs inherit these defaults via _base_.
+
+data:
+  data_root: $SENSORLLM_DATA_ROOT
+  sensors:
+    - vibration
+  transform: spectrogram
+  window_size: 4096          # samples per window (~10s at 400Hz)
+  hop_size: 2048             # 50% overlap
+  image_size: 224            # resize transform output to 224x224
+  batch_size: 32
+  num_workers: 4
+  pin_memory: true
+  augment: false             # enable for Stage 2 training

@@ -1,0 +1,9 @@
+# Linear Projection adapter hyperparameters (LLaVA-1 style).
+# Simple two-layer MLP with adaptive average pooling for token count control.
+
+model:
+  adapter:
+    name: linear_projection
+    n_output_tokens: 32
+    hidden_dim: 768            # MLP intermediate dimension
+    activation: gelu
