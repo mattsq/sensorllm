@@ -1,0 +1,63 @@
+# Experiment 005: CNN1D Encoder + Linear Projection Adapter + Real GPT-2 (124M)
+#
+# Uses the real GPT-2 124M model downloaded to data/models/gpt2/.
+# Run scripts/download_model.py first to fetch the weights.
+
+_base_:
+  - configs/base/data_base.yaml
+  - configs/base/model_base.yaml
+  - configs/base/training_base.yaml
+  - configs/adapters/linear_projection.yaml
+
+experiment_name: exp005_cnn1d_linear_gpt2_real
+
+seed: 42
+
+data:
+  sensors:
+    - vibration
+  window_size: 4096
+  hop_size: 2048
+  n_channels: 1
+  batch_size: 4
+
+model:
+  encoder:
+    name: cnn1d
+    in_channels: 1
+    hidden_dim: 256
+    n_res_blocks: 2
+    n_stride_layers: 4
+    kernel_size: 7
+    stride: 4
+    dilation_base: 2
+    freeze: false
+  adapter:
+    name: linear_projection
+    n_output_tokens: 32
+    hidden_dim: 256
+  llm:
+    name: data/models/gpt2
+    torch_dtype: float32
+    device_map: cpu
+    freeze: true
+    lora:
+      enabled: false
+      r: 16
+      alpha: 32.0
+      dropout: 0.05
+      target_modules:
+        - c_attn
+        - c_proj
+  sensor_token_id: 4
+
+training:
+  stage: 1
+  max_steps: 10000
+  learning_rate: 1.0e-4
+  warmup_steps: 500
+  gradient_accumulation_steps: 4
+  bf16: false
+  save_steps: 1000
+  eval_steps: 500
+  logging_steps: 50

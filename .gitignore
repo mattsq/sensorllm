@@ -36,6 +36,10 @@ wandb/
 mlruns/
 runs/
 
+# Downloaded model weights (large, not tracked)
+data/models/gpt2/
+data/models/gpt2-*/
+
 # HuggingFace cache
 .cache/
 hf_cache/
