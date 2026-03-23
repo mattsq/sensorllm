@@ -1,0 +1,908 @@
+{
+  "version": "1.0",
+  "truncation": null,
+  "padding": null,
+  "added_tokens": [
+    {
+      "id": 0,
+      "content": "<pad>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 1,
+      "content": "<eos>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 2,
+      "content": "<bos>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 3,
+      "content": "<unk>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 4,
+      "content": "<sensor>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    }
+  ],
+  "normalizer": null,
+  "pre_tokenizer": {
+    "type": "Whitespace"
+  },
+  "post_processor": {
+    "type": "TemplateProcessing",
+    "single": [
+      {
+        "SpecialToken": {
+          "id": "<bos>",
+          "type_id": 0
+        }
+      },
+      {
+        "Sequence": {
+          "id": "A",
+          "type_id": 0
+        }
+      },
+      {
+        "SpecialToken": {
+          "id": "<eos>",
+          "type_id": 0
+        }
+      }
+    ],
+    "pair": [
+      {
+        "Sequence": {
+          "id": "A",
+          "type_id": 0
+        }
+      },
+      {
+        "Sequence": {
+          "id": "B",
+          "type_id": 1
+        }
+      }
+    ],
+    "special_tokens": {
+      "<bos>": {
+        "id": "<bos>",
+        "ids": [
+          2
+        ],
+        "tokens": [
+          "<bos>"
+        ]
+      },
+      "<eos>": {
+        "id": "<eos>",
+        "ids": [
+          1
+        ],
+        "tokens": [
+          "<eos>"
+        ]
+      }
+    }
+  },
+  "decoder": null,
+  "model": {
+    "type": "BPE",
+    "dropout": null,
+    "unk_token": null,
+    "continuing_subword_prefix": null,
+    "end_of_word_suffix": null,
+    "fuse_unk": false,
+    "byte_fallback": false,
+    "ignore_merges": false,
+    "vocab": {
+      "<pad>": 0,
+      "<eos>": 1,
+      "<bos>": 2,
+      "<unk>": 3,
+      "<sensor>": 4,
+      ".": 5,
+      "0": 6,
+      "1": 7,
+      "5": 8,
+      "<": 9,
+      ">": 10,
+      "B": 11,
+      "D": 12,
+      "H": 13,
+      "I": 14,
+      "M": 15,
+      "N": 16,
+      "P": 17,
+      "R": 18,
+      "S": 19,
+      "T": 20,
+      "a": 21,
+      "b": 22,
+      "c": 23,
+      "d": 24,
+      "e": 25,
+      "f": 26,
+      "g": 27,
+      "h": 28,
+      "i": 29,
+      "l": 30,
+      "m": 31,
+      "n": 32,
+      "o": 33,
+      "p": 34,
+      "q": 35,
+      "r": 36,
+      "s": 37,
+      "t": 38,
+      "u": 39,
+      "v": 40,
+      "w": 41,
+      "x": 42,
+      "y": 43,
+      "z": 44,
+      "en": 45,
+      "re": 46,
+      "al": 47,
+      "at": 48,
+      "in": 49,
+      "it": 50,
+      "om": 51,
+      "on": 52,
+      "or": 53,
+      "sen": 54,
+      "te": 55,
+      "wit": 56,
+      "with": 57,
+      "an": 58,
+      "he": 59,
+      "ib": 60,
+      "is": 61,
+      "rat": 62,
+      "sor": 63,
+      "ent": 64,
+      "ing": 65,
+      "sensor": 66,
+      "The": 67,
+      "ar": 68,
+      "cy": 69,
+      "com": 70,
+      "cte": 71,
+      "de": 72,
+      "fre": 73,
+      "gn": 74,
+      "ion": 75,
+      "ign": 76,
+      "pe": 77,
+      "pon": 78,
+      "qu": 79,
+      "vib": 80,
+      "ency": 81,
+      "rea": 82,
+      "ration": 83,
+      "compon": 84,
+      "frequ": 85,
+      "vibration": 86,
+      "component": 87,
+      "frequency": 88,
+      "1x": 89,
+      "50": 90,
+      "Be": 91,
+      "De": 92,
+      "Hz": 93,
+      "Im": 94,
+      "MS": 95,
+      "Mis": 96,
+      "No": 97,
+      "PM": 98,
+      "RMS": 99,
+      "RPM": 100,
+      "am": 101,
+      "au": 102,
+      "ax": 103,
+      "are": 104,
+      "acte": 105,
+      "bal": 106,
+      "ce": 107,
+      "ch": 108,
+      "cr": 109,
+      "ct": 110,
+      "crea": 111,
+      "dom": 112,
+      "ding": 113,
+      "fi": 114,
+      "fau": 115,
+      "ho": 116,
+      "ic": 117,
+      "ial": 118,
+      "le": 119,
+      "lt": 120,
+      "lit": 121,
+      "mal": 122,
+      "ment": 123,
+      "nor": 124,
+      "ou": 125,
+      "ope": 126,
+      "ofi": 127,
+      "pr": 128,
+      "pre": 129,
+      "pat": 130,
+      "plit": 131,
+      "rn": 132,
+      "ral": 133,
+      "ris": 134,
+      "se": 135,
+      "sign": 136,
+      "spe": 137,
+      "scr": 138,
+      "sho": 139,
+      "the": 140,
+      "tic": 141,
+      "ure": 142,
+      "ude": 143,
+      "ws": 144,
+      "align": 145,
+      "alou": 146,
+      "ature": 147,
+      "inan": 148,
+      "increa": 149,
+      "omalou": 150,
+      "sent": 151,
+      "tecte": 152,
+      "tern": 153,
+      "ance": 154,
+      "anomalou": 155,
+      "ibe": 156,
+      "rating": 157,
+      "aring": 158,
+      "aracte": 159,
+      "detecte": 160,
+      "reading": 161,
+      "components": 162,
+      "Bearing": 163,
+      "Descr": 164,
+      "Imbal": 165,
+      "Misalign": 166,
+      "amplit": 167,
+      "axial": 168,
+      "characte": 169,
+      "ctral": 170,
+      "dominan": 171,
+      "fault": 172,
+      "normal": 173,
+      "operating": 174,
+      "ofile": 175,
+      "profile": 176,
+      "present": 177,
+      "pattern": 178,
+      "ristic": 179,
+      "signature": 180,
+      "spectral": 181,
+      "shows": 182,
+      "increase": 183,
+      "anomalous": 184,
+      "detected": 185,
+      "Describe": 186,
+      "Imbalance": 187,
+      "Misalignment": 188,
+      "amplitude": 189,
+      "characteristic": 190,
+      "dominant": 191
+    },
+    "merges": [
+      [
+        "e",
+        "n"
+      ],
+      [
+        "r",
+        "e"
+      ],
+      [
+        "a",
+        "l"
+      ],
+      [
+        "a",
+        "t"
+      ],
+      [
+        "i",
+        "n"
+      ],
+      [
+        "i",
+        "t"
+      ],
+      [
+        "o",
+        "m"
+      ],
+      [
+        "o",
+        "n"
+      ],
+      [
+        "o",
+        "r"
+      ],
+      [
+        "s",
+        "en"
+      ],
+      [
+        "t",
+        "e"
+      ],
+      [
+        "w",
+        "it"
+      ],
+      [
+        "wit",
+        "h"
+      ],
+      [
+        "a",
+        "n"
+      ],
+      [
+        "h",
+        "e"
+      ],
+      [
+        "i",
+        "b"
+      ],
+      [
+        "i",
+        "s"
+      ],
+      [
+        "r",
+        "at"
+      ],
+      [
+        "s",
+        "or"
+      ],
+      [
+        "en",
+        "t"
+      ],
+      [
+        "in",
+        "g"
+      ],
+      [
+        "sen",
+        "sor"
+      ],
+      [
+        "T",
+        "he"
+      ],
+      [
+        "a",
+        "r"
+      ],
+      [
+        "c",
+        "y"
+      ],
+      [
+        "c",
+        "om"
+      ],
+      [
+        "c",
+        "te"
+      ],
+      [
+        "d",
+        "e"
+      ],
+      [
+        "f",
+        "re"
+      ],
+      [
+        "g",
+        "n"
+      ],
+      [
+        "i",
+        "on"
+      ],
+      [
+        "i",
+        "gn"
+      ],
+      [
+        "p",
+        "e"
+      ],
+      [
+        "p",
+        "on"
+      ],
+      [
+        "q",
+        "u"
+      ],
+      [
+        "v",
+        "ib"
+      ],
+      [
+        "en",
+        "cy"
+      ],
+      [
+        "re",
+        "a"
+      ],
+      [
+        "rat",
+        "ion"
+      ],
+      [
+        "com",
+        "pon"
+      ],
+      [
+        "fre",
+        "qu"
+      ],
+      [
+        "vib",
+        "ration"
+      ],
+      [
+        "compon",
+        "ent"
+      ],
+      [
+        "frequ",
+        "ency"
+      ],
+      [
+        "1",
+        "x"
+      ],
+      [
+        "5",
+        "0"
+      ],
+      [
+        "B",
+        "e"
+      ],
+      [
+        "D",
+        "e"
+      ],
+      [
+        "H",
+        "z"
+      ],
+      [
+        "I",
+        "m"
+      ],
+      [
+        "M",
+        "S"
+      ],
+      [
+        "M",
+        "is"
+      ],
+      [
+        "N",
+        "o"
+      ],
+      [
+        "P",
+        "M"
+      ],
+      [
+        "R",
+        "MS"
+      ],
+      [
+        "R",
+        "PM"
+      ],
+      [
+        "a",
+        "m"
+      ],
+      [
+        "a",
+        "u"
+      ],
+      [
+        "a",
+        "x"
+      ],
+      [
+        "a",
+        "re"
+      ],
+      [
+        "a",
+        "cte"
+      ],
+      [
+        "b",
+        "al"
+      ],
+      [
+        "c",
+        "e"
+      ],
+      [
+        "c",
+        "h"
+      ],
+      [
+        "c",
+        "r"
+      ],
+      [
+        "c",
+        "t"
+      ],
+      [
+        "c",
+        "rea"
+      ],
+      [
+        "d",
+        "om"
+      ],
+      [
+        "d",
+        "ing"
+      ],
+      [
+        "f",
+        "i"
+      ],
+      [
+        "f",
+        "au"
+      ],
+      [
+        "h",
+        "o"
+      ],
+      [
+        "i",
+        "c"
+      ],
+      [
+        "i",
+        "al"
+      ],
+      [
+        "l",
+        "e"
+      ],
+      [
+        "l",
+        "t"
+      ],
+      [
+        "l",
+        "it"
+      ],
+      [
+        "m",
+        "al"
+      ],
+      [
+        "m",
+        "ent"
+      ],
+      [
+        "n",
+        "or"
+      ],
+      [
+        "o",
+        "u"
+      ],
+      [
+        "o",
+        "pe"
+      ],
+      [
+        "o",
+        "fi"
+      ],
+      [
+        "p",
+        "r"
+      ],
+      [
+        "p",
+        "re"
+      ],
+      [
+        "p",
+        "at"
+      ],
+      [
+        "p",
+        "lit"
+      ],
+      [
+        "r",
+        "n"
+      ],
+      [
+        "r",
+        "al"
+      ],
+      [
+        "r",
+        "is"
+      ],
+      [
+        "s",
+        "e"
+      ],
+      [
+        "s",
+        "ign"
+      ],
+      [
+        "s",
+        "pe"
+      ],
+      [
+        "s",
+        "cr"
+      ],
+      [
+        "s",
+        "ho"
+      ],
+      [
+        "t",
+        "he"
+      ],
+      [
+        "t",
+        "ic"
+      ],
+      [
+        "u",
+        "re"
+      ],
+      [
+        "u",
+        "de"
+      ],
+      [
+        "w",
+        "s"
+      ],
+      [
+        "al",
+        "ign"
+      ],
+      [
+        "al",
+        "ou"
+      ],
+      [
+        "at",
+        "ure"
+      ],
+      [
+        "in",
+        "an"
+      ],
+      [
+        "in",
+        "crea"
+      ],
+      [
+        "om",
+        "alou"
+      ],
+      [
+        "sen",
+        "t"
+      ],
+      [
+        "te",
+        "cte"
+      ],
+      [
+        "te",
+        "rn"
+      ],
+      [
+        "an",
+        "ce"
+      ],
+      [
+        "an",
+        "omalou"
+      ],
+      [
+        "ib",
+        "e"
+      ],
+      [
+        "rat",
+        "ing"
+      ],
+      [
+        "ar",
+        "ing"
+      ],
+      [
+        "ar",
+        "acte"
+      ],
+      [
+        "de",
+        "tecte"
+      ],
+      [
+        "rea",
+        "ding"
+      ],
+      [
+        "component",
+        "s"
+      ],
+      [
+        "Be",
+        "aring"
+      ],
+      [
+        "De",
+        "scr"
+      ],
+      [
+        "Im",
+        "bal"
+      ],
+      [
+        "Mis",
+        "align"
+      ],
+      [
+        "am",
+        "plit"
+      ],
+      [
+        "ax",
+        "ial"
+      ],
+      [
+        "ch",
+        "aracte"
+      ],
+      [
+        "ct",
+        "ral"
+      ],
+      [
+        "dom",
+        "inan"
+      ],
+      [
+        "fau",
+        "lt"
+      ],
+      [
+        "nor",
+        "mal"
+      ],
+      [
+        "ope",
+        "rating"
+      ],
+      [
+        "ofi",
+        "le"
+      ],
+      [
+        "pr",
+        "ofile"
+      ],
+      [
+        "pre",
+        "sent"
+      ],
+      [
+        "pat",
+        "tern"
+      ],
+      [
+        "ris",
+        "tic"
+      ],
+      [
+        "sign",
+        "ature"
+      ],
+      [
+        "spe",
+        "ctral"
+      ],
+      [
+        "sho",
+        "ws"
+      ],
+      [
+        "increa",
+        "se"
+      ],
+      [
+        "anomalou",
+        "s"
+      ],
+      [
+        "detecte",
+        "d"
+      ],
+      [
+        "Descr",
+        "ibe"
+      ],
+      [
+        "Imbal",
+        "ance"
+      ],
+      [
+        "Misalign",
+        "ment"
+      ],
+      [
+        "amplit",
+        "ude"
+      ],
+      [
+        "characte",
+        "ristic"
+      ],
+      [
+        "dominan",
+        "t"
+      ]
+    ]
+  }
+}
