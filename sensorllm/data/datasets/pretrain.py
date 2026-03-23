@@ -42,6 +42,7 @@ class SensorPretrainDataset(BaseSensorDataset):
         window_size: int = 4096,
         n_channels: int = 1,
         max_length: int = 256,
+        sensors: list[str] | None = None,
         **config,
     ) -> None:
         self.data_root = Path(data_root)
@@ -50,20 +51,29 @@ class SensorPretrainDataset(BaseSensorDataset):
         self.window_size = window_size
         self.n_channels = n_channels
         self.max_length = max_length
+        self.sensors = sensors
         self._samples: list[dict] = []
         self._load_index()
 
     def _load_index(self) -> None:
-        """Read the JSONL split file and populate self._samples."""
+        """Read the JSONL split file and populate self._samples.
+
+        If ``self.sensors`` is set, only samples whose ``sensor`` field matches
+        one of the specified sensor types are loaded.
+        """
         index_path = self.data_root / "splits" / f"synthetic_{self.split}.jsonl"
         if not index_path.exists():
             logger.warning("Index file not found: %s", index_path)
             return
+        sensor_filter = set(self.sensors) if self.sensors else None
         with index_path.open() as f:
             for line in f:
                 line = line.strip()
                 if line:
-                    self._samples.append(json.loads(line))
+                    record = json.loads(line)
+                    if sensor_filter and record.get("sensor") not in sensor_filter:
+                        continue
+                    self._samples.append(record)
         logger.info("Loaded %d samples from %s", len(self._samples), index_path)
 
     def __len__(self) -> int:

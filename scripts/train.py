@@ -118,6 +118,7 @@ def main() -> None:
         tokenizer=tokenizer,
         window_size=data_cfg.get("window_size", 4096),
         n_channels=data_cfg.get("n_channels", 1),
+        sensors=data_cfg.get("sensors"),
     )
     val_dataset = SensorPretrainDataset(
         data_root=data_root,
@@ -125,6 +126,7 @@ def main() -> None:
         tokenizer=tokenizer,
         window_size=data_cfg.get("window_size", 4096),
         n_channels=data_cfg.get("n_channels", 1),
+        sensors=data_cfg.get("sensors"),
     )
     logger.info("Train samples: %d, Val samples: %d", len(train_dataset), len(val_dataset))
 

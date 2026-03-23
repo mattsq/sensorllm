@@ -70,7 +70,6 @@ class SensorLLMModel(nn.Module):
             Tuple of (logits, loss). Loss is None when labels is None.
         """
         B = sensor_signals.shape[0]
-        device = sensor_signals.device
 
         # Encode sensor signals to LLM-space token embeddings
         sensor_embs = self._encode_sensor(sensor_signals)  # (B, T, D_llm)
@@ -78,6 +77,11 @@ class SensorLLMModel(nn.Module):
 
         # Get text embeddings from the LLM's embedding layer
         text_embs = self.llm.get_input_embeddings()(input_ids)  # (B, seq_len, D_llm)
+
+        # Ensure all tensors are on the same device as the text embeddings (LLM device)
+        device = text_embs.device
+        sensor_embs = sensor_embs.to(device)
+        attention_mask = attention_mask.to(device)
 
         # Prepend sensor embeddings to text embeddings
         combined_embs = torch.cat([sensor_embs, text_embs], dim=1)
@@ -89,6 +93,7 @@ class SensorLLMModel(nn.Module):
         # Build combined labels (ignore sensor token positions)
         combined_labels = None
         if labels is not None:
+            labels = labels.to(device)
             sensor_labels = torch.full((B, T), -100, device=device, dtype=labels.dtype)
             combined_labels = torch.cat([sensor_labels, labels], dim=1)
 
@@ -118,12 +123,17 @@ class SensorLLMModel(nn.Module):
             Generated token IDs (B, output_len).
         """
         B = sensor_signals.shape[0]
-        device = sensor_signals.device
 
         sensor_embs = self._encode_sensor(sensor_signals)  # (B, T, D_llm)
         T = sensor_embs.shape[1]
 
         prompt_embs = self.llm.get_input_embeddings()(prompt_ids)
+
+        # Ensure all tensors are on the same device as the text embeddings (LLM device)
+        device = prompt_embs.device
+        sensor_embs = sensor_embs.to(device)
+        prompt_mask = prompt_mask.to(device)
+
         combined_embs = torch.cat([sensor_embs, prompt_embs], dim=1)
 
         sensor_mask = torch.ones(B, T, device=device, dtype=prompt_mask.dtype)
