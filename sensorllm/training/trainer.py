@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import torch
@@ -107,8 +108,14 @@ class SensorLLMTrainer:
                 if step % max(1, self.config.logging_steps) == 0:
                     logger.info("Step %d / %d  loss=%.4f", step, self.config.max_steps, loss_val)
 
+                if self.config.save_steps > 0 and step % self.config.save_steps == 0:
+                    self._save_checkpoint(step)
+
             if step >= self.config.max_steps:
                 break
+
+        # Always save final checkpoint
+        self._save_checkpoint(step, label="final")
 
         avg_loss = total_loss / max(step, 1)
         logger.info(
@@ -120,6 +127,15 @@ class SensorLLMTrainer:
             "final_loss": loss_val if step > 0 else None,
             "avg_loss": avg_loss,
         }
+
+    def _save_checkpoint(self, step: int, label: str | None = None) -> None:
+        """Save model state_dict to a checkpoint directory."""
+        dirname = label if label else f"checkpoint-{step}"
+        ckpt_dir = Path(self.config.output_dir) / dirname
+        ckpt_dir.mkdir(parents=True, exist_ok=True)
+        path = ckpt_dir / "model.pt"
+        torch.save(self.model.state_dict(), path)
+        logger.info("Saved checkpoint: %s", path)
 
     def _apply_stage_freezing(self) -> None:
         """Freeze/unfreeze model components according to the training stage."""
