@@ -23,6 +23,7 @@ env/
 data/raw/
 data/processed/
 data/spectrograms/
+data/splits/synthetic_*.jsonl
 
 # Experiment outputs (checkpoints, logs, artifacts)
 outputs/
