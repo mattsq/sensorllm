@@ -116,7 +116,6 @@ def setup_environment(repo_root: Path, data_root: Path, output_root: Path) -> No
     os.environ["SENSORLLM_DATA_ROOT"] = str(data_root)
     os.environ["SENSORLLM_OUTPUT_ROOT"] = str(output_root)
     os.environ["WANDB_MODE"] = "offline"  # Disable W&B for Colab by default
-    os.environ["HF_HUB_OFFLINE"] = "1"  # Use offline mode for HF if possible
 
     log_success(f"Data root: {data_root}")
     log_success(f"Output root: {output_root}")
@@ -130,7 +129,6 @@ SENSORLLM_DATA_ROOT={data_root}
 SENSORLLM_OUTPUT_ROOT={output_root}
 WANDB_PROJECT=sensorllm
 WANDB_MODE=offline
-HF_HUB_OFFLINE=1
 """
         env_file.write_text(env_content)
         log_success(f"Created .env file: {env_file}")
@@ -216,8 +214,7 @@ def verify_installation() -> bool:
         "accelerate",
         "h5py",
         "yaml",
-        "pyyaml",
-        "dotenv",
+        "einops",
     ]
 
     all_installed = True
@@ -273,8 +270,8 @@ Examples:
     parser.add_argument(
         "--config",
         type=str,
-        default="configs/experiments/exp001_cnn1d_linear.yaml",
-        help="Experiment config to use (default: exp001_cnn1d_linear.yaml)",
+        default="configs/experiments/exp004_cnn1d_linear_gpt2.yaml",
+        help="Experiment config to use (default: exp004_cnn1d_linear_gpt2.yaml — uses tiny local GPT-2, no auth needed)",
     )
     parser.add_argument(
         "--max-steps",

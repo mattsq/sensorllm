@@ -59,6 +59,13 @@ class SensorLLMTrainer:
         self.train_dataset = train_dataset
         self.eval_dataset = eval_dataset
 
+    def _get_device(self) -> torch.device:
+        """Infer the device from model parameters."""
+        try:
+            return next(self.model.parameters()).device
+        except StopIteration:
+            return torch.device("cpu")
+
     def train(self) -> dict[str, Any]:
         """Run the training loop.
 
@@ -66,6 +73,9 @@ class SensorLLMTrainer:
             Dict of training metrics and step count.
         """
         self._apply_stage_freezing()
+
+        device = self._get_device()
+        logger.info("Training on device: %s", device)
 
         dataloader = DataLoader(
             self.train_dataset,
@@ -87,6 +97,12 @@ class SensorLLMTrainer:
             for batch in dataloader:
                 if step >= self.config.max_steps:
                     break
+
+                # Move batch tensors to the model's device
+                batch = {
+                    k: v.to(device) if isinstance(v, torch.Tensor) else v
+                    for k, v in batch.items()
+                }
 
                 logits, loss = self.model(
                     sensor_signals=batch["sensor_signal"],

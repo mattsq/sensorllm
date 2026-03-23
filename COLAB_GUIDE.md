@@ -30,7 +30,7 @@ This guide explains how to install and train SensorLLM in Google Colab using syn
 
 2. Run the automated setup and training script:
    ```bash
-   !python colab_training.py --max-steps 1000 --batch-size 8
+   !python colab_training.py --max-steps 500 --batch-size 8
    ```
 
 3. View results:
@@ -65,7 +65,7 @@ The installation includes:
    - Input: Raw sensor time-series (B, C, L)
    - Encoder: CNN1D (dilated convolution)
    - Adapter: Linear projection
-   - LLM: LLaMA 3.2 1B
+   - LLM: Tiny GPT-2 (local, no auth needed)
    - Output: Learned alignment between sensors → LLM
       ↓
 4. Save results
